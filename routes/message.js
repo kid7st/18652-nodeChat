@@ -7,7 +7,12 @@ var Ret = require('../models/Ret');
  * Args:
  */
 router.get('/', function(req, res, next) {
-    var page = req.query.page;
+    if( typeof req.query.page === 'undefined' ||
+        typeof req.query.page_size === 'undefined') {
+
+        res.send( (new Ret(-1, "Undefined parameters", {})).toJSON() );
+    }
+
     var page_size = req.query.page_size;
     Message.search({}, {time: -1}, page, page_size, function(err, messages){
         if(err){
@@ -21,11 +26,17 @@ router.get('/', function(req, res, next) {
 
 /* Put Message to update a new message */
 router.put('/', function(req, res, next) {
+    if( typeof req.body.title === 'undefined' ||
+        typeof req.body.content === 'undefined' ||
+        typeof req.body.author === 'undefined') {
+            res.send( (new Ret(-1, "Undefined parameters Error", {})).toJSON() );
+    }
+
     Message.add({
         title : req.body.title,
         content : req.body.content,
         author : req.body.author,
-        status : 1
+        status : 0
     }, function(err){
         if(err){
             console.log("Put message Error!");
