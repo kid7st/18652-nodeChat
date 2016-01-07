@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var Ret = require('./Ret');
 
 var User = mongoose.model('User', {
-    username : {type : String, default : ''},
+    username : {type : String, default : '', unique : true},
     password : {type : String, default : ''},
-    nickname : {type : String, default : ''},
+    nickname : {type : String, default : '', unique : true},
     status : {type : Number, default : 0}
 });
 
@@ -15,7 +15,7 @@ User.search = function(filter, sort, page, page_size, callback) {
 };
 
 User.get = function(id, callback) {
-    this.findById(id, callback);
+    this.findById(id).exec(callback);
 };
 
 User.add = function(data, callback) {
@@ -38,3 +38,5 @@ User.update = function(id, data, callback){
         user.save(callback);
     });
 }
+
+module.exports = User;
