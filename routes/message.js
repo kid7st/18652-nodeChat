@@ -8,10 +8,16 @@ var Ret = require('../models/Ret');
  */
 router.get('/', function(req, res, next) {
     var page = req.query.page;
-    Message.find({}).sort({time : -1}).skip(page * 10).limit(10).lean().exec(function(err, messages) {
-        console.log(JSON.stringify(messages));
-        var ret = new Ret(0, messages);
-        res.send(JSON.stringify(ret));
+    var page_size = req.query.page_size;
+    Message.search({}, {time: -1}, page, page_size, function(err, messages){
+        if(err){
+            console.log("Search for the messages error!");
+            var ret = new Ret(-1, []);
+            res.send(ret.toJSON());
+        }else{
+            var ret = new Ret(0, messages);
+            res.send(ret.toJSON());
+        }
     });
 });
 
@@ -28,10 +34,10 @@ router.put('/', function(req, res, next) {
         if(err){
             console.log("Put message Error!");
             res.send(JSON.stringify(new Ret(1, {})));
+        }else{
+            res.send(JSON.stringify(new Ret(0, {})));
         }
     });
-
-    res.send(JSON.stringify(new Ret(0, {})));
 });
 
 module.exports = router;
