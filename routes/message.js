@@ -23,14 +23,12 @@ router.get('/', function(req, res, next) {
 
 /* Put Message to update a new message */
 router.put('/', function(req, res, next) {
-    var message = new Message({
+    Message.add({
         title : req.body.title,
         content : req.body.content,
         author : req.body.author,
         status : 1
-    });
-
-    message.save(function(err) {
+    }, function(err){
         if(err){
             console.log("Put message Error!");
             res.send(JSON.stringify(new Ret(1, {})));
@@ -39,5 +37,6 @@ router.put('/', function(req, res, next) {
         }
     });
 });
+
 
 module.exports = router;
