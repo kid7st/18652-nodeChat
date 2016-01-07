@@ -24,7 +24,7 @@ User.add = function(data, callback) {
 };
 
 User.update = function(id, data, callback){
-    User.findById(id, function(err, user){
+    User.findById(id).exec(function(err, user){
         if( !(typeof data.nickname === 'undefined') ) {
             user.nickname = data.nickname;
         }
