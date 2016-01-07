@@ -6,6 +6,7 @@ var Ret = function(code, message, data) {
     this.toJSON = function(){
         return {
             code : this.code,
+            message : this.message,
             data : this.data
         };
     };

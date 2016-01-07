@@ -12,10 +12,9 @@ router.get('/', function(req, res, next) {
     Message.search({}, {time: -1}, page, page_size, function(err, messages){
         if(err){
             console.log("Search for the messages error!");
-            Ret(-1, "Search the Message Error", []);
-            res.send( new Ret(-1, "Search the Message Error", []) );
+            res.send( (new Ret(-1, "Search the Message Error", [])).toJSON() );
         }else{
-            res.send( new Ret(0, "Success", messages) );
+            res.send( (new Ret(0, "Success", messages)).toJSON() );
         }
     });
 });
@@ -30,9 +29,9 @@ router.put('/', function(req, res, next) {
     }, function(err){
         if(err){
             console.log("Put message Error!");
-            res.send(JSON.stringify(new Ret(-1, "Update message to database happens error" {})));
+            res.send( (new Ret(-1, "Update message to database happens error", {})).toJSON() );
         }else{
-            res.send(JSON.stringify(new Ret(0, "Success", {})));
+            res.send( (new Ret(0, "Success", {})).toJSON() );
         }
     });
 });

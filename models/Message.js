@@ -9,14 +9,14 @@ var Message = mongoose.model('Message', {
     status : {type : Number, default : 0}
 });
 
-Message.search = function(filter, sort, page, limit, callback) {
-    this.find(filter).sort(sort).skip(page * limit).limit(limit).lean()
+Message.search = function(filter, sort, page, page_size, callback) {
+    this.find(filter).sort(sort).skip(page * page_size).limit(page_size).lean()
         .exec(callback);
 };
 
 Message.add = function(data, callback) {
         message = new Message(data);
         message.save(callback);
-}
+};
 
 module.exports = Message;
