@@ -14,8 +14,9 @@ User.search = function(filter, sort, page, page_size, callback) {
         .lean().exec(callback);
 };
 
-User.get = function(id, callback) {
-    this.findById(id).exec(callback);
+User.get = function(username, callback) {
+    var query = User.where({username : username});
+    query.findOne(callback);
 };
 
 User.add = function(data, callback) {

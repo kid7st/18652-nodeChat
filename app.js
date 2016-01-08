@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var session = require('express-session');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -22,6 +23,14 @@ db.once('open', function() {
 
 var app = express();
 
+/* Sessiong Setting */
+var sessionMid = session({
+    store: new session.MemoryStore(),
+    secret: "testtestSession",
+    saveUninitialized: true,
+    resave: true
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -33,6 +42,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(sessionMid);
 
 app.use('/', routes);
 app.use('/users', users);

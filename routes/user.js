@@ -42,14 +42,54 @@ router.put('/signup', function(req, res, next) {
     });
 });
 
-/* Login User to server */
-router.post('/login', function(req, res, next) {
-    res.send("Post User login");
+router.get('/test_session', function(req, res, next){
+    res.send(req.session.user);
 });
 
+/* Login User to server */
+router.post('/login', function(req, res, next) {
+    if( typeof req.body.username === 'undefined' ||
+        typeof req.body.password === 'undefined' ){
+        res.send( (new Ret(-1, "Undefined parameters errors!", {})).toJSON() );
+    }
+
+    var username = req.body.username;
+    var password = req.body.password;
+    User.get(username, function(err, user){
+        if(err){
+            console.log("findOne user from database errors!");
+            res.send( (new Ret(-1, "findOne user from database errors!", {})).toJSON() );
+        }else{
+            if(!user){
+                res.send( (new Ret(1, "Login Error : No User!", {})).toJSON() );
+            }else{
+                if(user.password != password){
+                    res.send( (new Ret(2, "Login Error : Wrong Password!", {})).toJSON() );
+                }else{
+                    req.session.user = user;
+                    res.send( (new Ret(0, "Success", {})).toJSON() );
+                }
+            }
+        }
+
+    });
+
+});
+
+/* Check Session */
+router.post('/logout', loginRequired);
 /* Logout User from server */
 router.post('/logout', function(req, res, next) {
-    res.send("Get User logout");
+    req.session.user = null;
+    res.send( (new Ret(0, "Success", {})).toJSON() );
 });
+
+function loginRequired(req, res, next){
+    if(!req.session.user){
+        res.send( (new Ret(-10, "Permission Errors, Login Required", {})).toJSON() );
+    }else{
+        next();
+    }
+}
 
 module.exports = router;
