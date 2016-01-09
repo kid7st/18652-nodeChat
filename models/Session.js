@@ -1,7 +1,7 @@
 var session = require("express-session");
 
 var Session = {
-    onlineUsers: {}
+    onlineUsers: {},
 };
 
 /* Session Check for Express */
@@ -16,15 +16,21 @@ Session.loginRequired = function(req, res, next){
 
 /* Socket.io Session Manager */
 Session.socketAuthenticate = function(socket){
-    if(socket.request.session.user){
-        return true;
-    }else{
+    if(!socket.request.session.user){
         return false;
+    }
+
+    console.log(this.onlineUsers[socket.request.session.user.username]);
+
+    if( typeof this.onlineUsers[socket.request.session.user.username] === undefined){
+        return false;
+    }else{
+        return true;
     }
 };
 
 Session.socketIn = function(socket){
-    if(this.onlineUsers[socket.request.session.user.username] > 1){
+    if(this.onlineUsers[socket.request.session.user.username] >= 1){
         return true;
     }else{
         return false;
@@ -32,27 +38,24 @@ Session.socketIn = function(socket){
 };
 
 Session.sockConnect = function(socket){
-    if( !this.onlineUsers[socket.request.session.user.username] ){
-        var loginUserSocketIds = 1;
-        this.onlineUsers[socket.request.session.user.username] = loginUserSocketIds;
+    this.onlineUsers[socket.request.session.user.username] += 1;
+    if( this.onlineUsers[socket.request.session.user.username] == 1 ){
         return true;
     }else{
-        this.onlineUsers[socket.request.session.user.username] += 1;
         return false;
     }
 };
 
 Session.socketDisconnect = function(socket){
-    if(socket.request.session.user){
-        if( this.onlineUsers[socket.request.session.user.username] == 1){
-            delete this.onlineUsers[socket.request.session.user.username];
+    if( typeof this.onlineUsers[socket.request.session.user.username] === 'undefined'){
+        return true;
+    }else{
+        this.onlineUsers[socket.request.session.user.username] -= 1;
+        if( this.onlineUsers[socket.request.session.user.username] == 0){
             return true;
         }else{
-            this.onlineUsers[socket.request.session.user.username] -= 1;
             return false;
         }
-    }else{
-        return false;
     }
 };
 
@@ -62,9 +65,12 @@ Session.login = function(req, user){
         username: user.username,
         nickname: user.nickname
     };
+
+    Session.onlineUsers[req.session.user.username] = 0;
 };
 
 Session.logout = function(req){
+    delete Session.onlineUsers[req.session.user.username];
     req.session.user = null;
 };
 

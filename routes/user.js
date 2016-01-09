@@ -97,12 +97,12 @@ router.post('/login', function(req, res, next) {
 });
 
 /* Check Session */
-router.post('/logout', Session.loginRequired);
+router.get('/logout', Session.loginRequired);
 /* Logout User from server */
-router.post('/logout', function(req, res, next) {
+router.get('/logout', function(req, res, next) {
     Session.logout(req);
     //res.send( (new Ret(0, "Success", {})).toJSON() );
-    res.redirect('/login');
+    res.redirect('/user/login');
 });
 
 module.exports = router;
