@@ -4,9 +4,13 @@ var Session = require('../models/Session');
 
 
 /* GET home page. */
-router.get('/', Session.loginRequired);
+//router.get('/', Session.loginRequired);
 router.get('/', function(req, res, next) {
-    res.sendFile(__dirname + '/index.html');
+    var options = {
+        root: __dirname + '/../public/',
+    };
+    res.sendFile('main.html', options);
 });
+
 
 module.exports = router;

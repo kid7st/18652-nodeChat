@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
 
-var routes = require('./routes/index');
+var index = require('./routes/index');
 var users = require('./routes/users');
 var user = require('./routes/user');
 var message = require('./routes/message');
@@ -22,8 +22,10 @@ db.once('open', function() {
 
 
 var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
-/* Sessiong Setting */
+/* Session Setting */
 var sessionMid = session({
     store: new session.MemoryStore(),
     secret: "testtestSession",
@@ -44,7 +46,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(sessionMid);
 
-app.use('/', routes);
+app.use('/', index);
 app.use('/users', users);
 app.use('/user', user);
 app.use('/message', message);
@@ -80,5 +82,14 @@ app.use(function(err, req, res, next) {
   });
 });
 
+io.on('connection', function(socket){
+    console.log("connected");
+});
+
+/*
+http.listen(3000, function(){
+    console.log('listening on: 3000');
+});
+*/
 
 module.exports = app;

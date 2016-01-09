@@ -8,27 +8,27 @@ var router = express.Router();
 router.get('/', Session.loginRequired);
 router.get('/', function(req, res, next) {
     if(typeof req.query.username === 'undefined'){
-        ret.json(new Ret(-1, 'Undefined parameters errors!', null));
-    }
-
-    User.get(req.query.username, function(err, user) {
-        if(err){
-            console.log("Wrong Id to get the User!");
-            res.json(new Ret(-1, "Wrong Id to get the User!", null));
-        }else{
-            if(user){
-                var profile = {
-                    id: user._id,
-                    username: user.username,
-                    nickname: user.nickname,
-                    status: user.status
-                };
-                res.json(new Ret(0, "Success", profile));
+        res.json(new Ret(-1, 'Undefined parameters errors!', null));
+    }else{
+        User.get(req.query.username, function(err, user) {
+            if(err){
+                console.log("Wrong Id to get the User!");
+                res.json(new Ret(-1, "Wrong Id to get the User!", null));
             }else{
-                res.json(new Ret(-1, "Failed to Get the User: Wrong User Id", null));
+                if(user){
+                    var profile = {
+                        id: user._id,
+                        username: user.username,
+                        nickname: user.nickname,
+                        status: user.status
+                    };
+                    res.json(new Ret(0, "Success", profile));
+                }else{
+                    res.json(new Ret(-1, "Failed to Get the User: Wrong User Id", null));
+                }
             }
-        }
-    });
+        });
+    }
 });
 
 router.get('/signup', function(req, res, next){
