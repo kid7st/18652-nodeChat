@@ -14,7 +14,7 @@ $(document).ready(function(){
                 if(response['code'] == 0){
                     $('#success-login').show();
                     setTimeout(function(){
-                        self.location = '/user/test_session';
+                        self.location = '/';
                     }, 1000);
                 }else{
                     $('#fail-login').show();

@@ -12,6 +12,7 @@ var users = require('./routes/users');
 var user = require('./routes/user');
 var message = require('./routes/message');
 
+var Session = require('./models/Session');
 
 mongoose.connect('mongodb://localhost/test');
 var db = mongoose.connection;
@@ -25,14 +26,6 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-/* Session Setting */
-var sessionMid = session({
-    store: new session.MemoryStore(),
-    secret: "testtestSession",
-    saveUninitialized: true,
-    resave: true
-});
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -44,7 +37,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(sessionMid);
+app.use(Session.sessionMid);
 
 app.use('/', index);
 app.use('/users', users);
