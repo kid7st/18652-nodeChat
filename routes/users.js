@@ -1,15 +1,17 @@
 var express = require('express');
 var User = require('../models/User');
 var Ret = require('../models/Ret');
+var Session = require('../models/Session');
 var router = express.Router();
 
 
+router.get('/', Session.loginRequired);
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     if( typeof req.query.page === 'undefined' ||
         typeof req.query.page_size === 'undefined') {
 
-        res.send( (new Ret(-1, "Undefined parameters", {})).toJSON() );
+        res.json(new Ret(-1, "Undefined parameters", null));
     }
 
     var page = req.query.page;
@@ -17,9 +19,9 @@ router.get('/', function(req, res, next) {
     User.search({}, {status : -1}, page, page_size, function(err, users){
         if(err){
             console.log("Search for Users list errors!");
-            res.send( (new Ret(-1, "Search for Users list errors!", {})).toJSON() );
+            res.json(new Ret(-1, "Search for Users list errors!", null));
         }else{
-            res.send( (new Ret(0, "Success", users)).toJSON() );
+            res.json(new Ret(0, "Success", users));
         }
     });
 });

@@ -1,22 +1,38 @@
 var express = require('express');
 var User = require('../models/User');
 var Ret = require('../models/Ret');
+var Session = require('../models/Session');
 var router = express.Router();
 
 /* GET user profile */
+router.get('/', Session.loginRequired);
 router.get('/', function(req, res, next) {
-    if(typeof req.query.id === 'undefined'){
-        ret.send( (new Ret(-1, 'Undefined parameters errors!')).toJSON() );
+    if(typeof req.query.username === 'undefined'){
+        ret.json(new Ret(-1, 'Undefined parameters errors!', null));
     }
 
-    User.get(req.query.id, function(err, user) {
+    User.get(req.query.username, function(err, user) {
         if(err){
             console.log("Wrong Id to get the User!");
-            res.send( (new Ret(-1, "Wrong Id to get the User!", {})).toJSON() );
+            res.json(new Ret(-1, "Wrong Id to get the User!", null));
         }else{
-            res.send( (new Ret(0, "Success", user)).toJSON() );
+            if(user){
+                var profile = {
+                    id: user._id,
+                    username: user.username,
+                    nickname: user.nickname,
+                    status: user.status
+                };
+                res.json(new Ret(0, "Success", profile));
+            }else{
+                res.json(new Ret(-1, "Failed to Get the User: Wrong User Id", null));
+            }
         }
     });
+});
+
+router.get('/signup', function(req, res, next){
+    res.sendFile(__dirname + '/signup.html');
 });
 
 /* PUT : Signup User */
@@ -24,7 +40,7 @@ router.put('/signup', function(req, res, next) {
     if( typeof req.body.username === 'undefined' ||
         typeof req.body.password === 'undefined' ||
         typeof req.body.nickname === 'undefined') {
-        res.send( (new Ret(-1, "Undefined parameters errors!", {})).toJSON() );
+        res.json(new Ret(-1, "Undefined parameters errors!", null));
     }
 
     User.add({
@@ -35,61 +51,62 @@ router.put('/signup', function(req, res, next) {
     }, function(err){
         if(err){
             console.log("The Username or the Nickname have existed!");
-            res.send( (new Ret(-1, "The Username or the Nickname have existed!", {})).toJSON() );
+            res.json(new Ret(-1, "The Username or the Nickname have existed!", null));
         }else{
-            res.send( (new Ret(0, "Success", {})).toJSON() );
+            res.json(new Ret(0, "Success", null));
         }
     });
 });
 
 router.get('/test_session', function(req, res, next){
-    res.send(req.session.user);
+    res.json(req.session.user);
+});
+
+
+router.get('/login', function(req, res, next){
+    var options = {
+        root: __dirname + '/../public/',
+    };
+    res.sendFile('login.html', options);
 });
 
 /* Login User to server */
 router.post('/login', function(req, res, next) {
     if( typeof req.body.username === 'undefined' ||
         typeof req.body.password === 'undefined' ){
-        res.send( (new Ret(-1, "Undefined parameters errors!", {})).toJSON() );
-    }
-
-    var username = req.body.username;
-    var password = req.body.password;
-    User.get(username, function(err, user){
-        if(err){
-            console.log("findOne user from database errors!");
-            res.send( (new Ret(-1, "findOne user from database errors!", {})).toJSON() );
-        }else{
-            if(!user){
-                res.send( (new Ret(1, "Login Error : No User!", {})).toJSON() );
+        //res.send( (new Ret(-1, "Undefined parameters errors!", null)).toJSON() );
+        res.json(new Ret(-1, "Undefined parameters errors!", null));
+    }else{
+        var username = req.body.username;
+        var password = req.body.password;
+        User.get(username, function(err, user){
+            if(err){
+                console.log("findOne user from database errors!");
+                res.json(new Ret(-1, "findOne user from database errors!", null));
             }else{
-                if(user.password != password){
-                    res.send( (new Ret(2, "Login Error : Wrong Password!", {})).toJSON() );
+                if(!user){
+                    res.json(new Ret(1, "Login Error : No User!", null));
                 }else{
-                    req.session.user = user;
-                    res.send( (new Ret(0, "Success", {})).toJSON() );
+                    if(user.password != password){
+                        res.json(new Ret(2, "Login Error : Wrong Password!", null));
+                    }else{
+                        Session.login(req, user);
+                        res.json(new Ret(0, "Success", null));
+                    }
                 }
             }
-        }
 
-    });
-
+        });
+    }
 });
 
 /* Check Session */
-router.post('/logout', loginRequired);
+router.post('/logout', Session.loginRequired);
 /* Logout User from server */
 router.post('/logout', function(req, res, next) {
-    req.session.user = null;
-    res.send( (new Ret(0, "Success", {})).toJSON() );
+    Session.logout(req);
+    //res.send( (new Ret(0, "Success", {})).toJSON() );
+    res.redirect('/login');
 });
-
-function loginRequired(req, res, next){
-    if(!req.session.user){
-        res.send( (new Ret(-10, "Permission Errors, Login Required", {})).toJSON() );
-    }else{
-        next();
-    }
-}
 
 module.exports = router;
