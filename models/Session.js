@@ -30,7 +30,7 @@ Session.socketAuthenticate = function(socket){
 };
 
 Session.socketIn = function(socket){
-    if(this.onlineUsers[socket.request.session.user.username] >= 1){
+    if(this.onlineUsers[socket.request.session.user.username].count >= 1){
         return true;
     }else{
         return false;
@@ -38,8 +38,8 @@ Session.socketIn = function(socket){
 };
 
 Session.sockConnect = function(socket){
-    this.onlineUsers[socket.request.session.user.username] += 1;
-    if( this.onlineUsers[socket.request.session.user.username] == 1 ){
+    this.onlineUsers[socket.request.session.user.username].count += 1;
+    if( this.onlineUsers[socket.request.session.user.username].count == 1 ){
         return true;
     }else{
         return false;
@@ -50,8 +50,8 @@ Session.socketDisconnect = function(socket){
     if( typeof this.onlineUsers[socket.request.session.user.username] === 'undefined'){
         return true;
     }else{
-        this.onlineUsers[socket.request.session.user.username] -= 1;
-        if( this.onlineUsers[socket.request.session.user.username] == 0){
+        this.onlineUsers[socket.request.session.user.username].count -= 1;
+        if( this.onlineUsers[socket.request.session.user.username].count == 0){
             return true;
         }else{
             return false;
@@ -66,7 +66,10 @@ Session.login = function(req, user){
         nickname: user.nickname
     };
 
-    Session.onlineUsers[req.session.user.username] = 0;
+    Session.onlineUsers[req.session.user.username] = {
+        count: 0,
+        nickname: user.nickname
+    };
 };
 
 Session.logout = function(req){

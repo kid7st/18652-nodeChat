@@ -36,13 +36,18 @@ io.on('connection', function(socket){
         }
 
         socket.emit( 'online_users',
-            new Ret(0, 'Online Users List', Session.onlineUsers)
+            new Ret(0, "Online Users", Session.onlineUsers)
         );
 
-        Message.search({}, {time: -1}, 0, 20, function(err, messages){
+        Message.search({}, {time: -1}, 0, 10, function(err, messages){
             if(!err){
+                var data = {
+                    currentUser: socket.request.session.user.nickname,
+                    messages: messages
+                };
+
                 socket.emit('msg_list',
-                    new Ret(0, "Messages", messages)
+                    new Ret(0, "Messages", data)
                 );
             }else{
                 socket.emit('msg_list',
@@ -66,7 +71,7 @@ io.on('connection', function(socket){
                 Message.add(message, function(err){
                     if(!err){
                         io.emit( 'new_message',
-                        new Ret(0, "New message", message));
+                            new Ret(0, "New message", message));
                     }else{
                         io.emit( 'new_message',
                         new Ret(-1, "New message errors"), null);

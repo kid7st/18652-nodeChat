@@ -7,7 +7,7 @@ var Session = require('../models/Session');
 router.get('/', Session.loginRequired);
 router.get('/', function(req, res, next) {
     var options = {
-        root: __dirname + '/../public/',
+        root: __dirname + '/../views/',
     };
     res.sendFile('main.html', options);
 });

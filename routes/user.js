@@ -4,6 +4,7 @@ var Ret = require('../models/Ret');
 var Session = require('../models/Session');
 var router = express.Router();
 
+
 /* GET user profile */
 router.get('/', Session.loginRequired);
 router.get('/', function(req, res, next) {
@@ -28,7 +29,11 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/signup', function(req, res, next){
-    res.sendFile(__dirname + '/signup.html');
+    var options = {
+        root: __dirname + '/../views/',
+    };
+
+    res.sendFile('signup.html', options);
 });
 
 /* PUT : Signup User */
@@ -49,7 +54,14 @@ router.put('/signup', function(req, res, next) {
             console.log("The Username or the Nickname have existed!");
             res.json(new Ret(-1, "The Username or the Nickname have existed!", null));
         }else{
-            res.json(new Ret(0, "Success", null));
+            User.get(req.body.username, function(err, user){
+                if(err){
+                    res.json(new Ret(-1, "Login Error", null));
+                }else{
+                    Session.login(req, user);
+                    res.json(new Ret(0, "Success", null));
+                }
+            });
         }
     });
 });
@@ -61,7 +73,7 @@ router.get('/test_session', function(req, res, next){
 
 router.get('/login', function(req, res, next){
     var options = {
-        root: __dirname + '/../public/',
+        root: __dirname + '/../views/',
     };
     res.sendFile('login.html', options);
 });

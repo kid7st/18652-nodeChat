@@ -1,0 +1,29 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Node Chatroom</title>
+    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../stylesheets/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://cdn.socket.io/socket.io-1.4.0.js"></script>
+    <script src="../javascripts/main.js"></script>
+</head>
+<body>
+    <div class="row">
+        <div id="messages-list" class="col-xs-12 col-md-9 bs-example bs-example-bg-classes">
+        </div>
+
+        <div id="online-users" class="col-xs-6 col-md-3 bs-online bs-example bs-example-bg-classes">
+        </div>
+    </div>
+    <div class ="row">
+        <form id="send" class="col-xs-12 col-md-9">
+            <input type="text" class="message" id="message" placeholder="Message">
+            <button type="submit" class="btn btn-success btn-lg">Send</button>
+        </form>
+        <form id="logout" class="col-xs-6 col-md-3">
+            <button type="submit" class="btn-logout btn btn-danger btn-lg">logout</button>
+        </form>
+    </div>
+</body>
+</html>
