@@ -9,6 +9,22 @@ $(document).ready(function(){
         console.log(content);
         event.preventDefault();
     });
+
+    $('#logout').submit(function(event){
+        $.ajax({
+            method: 'POST',
+            url: '/user/logout',
+            success: function(response){
+                console.log(response);
+                if(response['code'] == 0){
+                    setTimeout(function(){
+                        self.location = '/user/login';
+                    }, 1000);
+                }
+            }
+        });
+        event.preventDefault();
+    });
 });
 
 var socket = io();
@@ -19,7 +35,7 @@ socket.on('online_users', function(ret){
     if(ret.code == 0){
         var users = ret.data;
         for(username in users){
-            var item = '<p class="bg-primary">' + users[username].nickname +'</p>';
+            var item = '<p id="' + username + '" class="bg-primary">' + users[username].nickname +'</p>';
             $('#online-users').append(item);
         }
     }
@@ -52,11 +68,19 @@ socket.on('msg_list', function(ret){
 socket.on('broadcast_join', function(ret){
     if(ret.code == 0){
         var user = ret.data;
-        var item = '<p class="bg-primary">' + user.nickname +'</p>';
+        var item = '<p id ="' + user.username + '" class="bg-primary">' + user.nickname +'</p>';
         $('#online-users').append(item);
     }
 });
 
+socket.on('broadcast_leave', function(ret){
+    console.log(ret);
+    if(ret.code == 0){
+        var username = ret.data.username;
+        console.log(username)
+        $('#' + username).remove();
+    }
+})
 socket.on('new_message', function(ret){
     if(ret.code == 0){
         message = ret.data;

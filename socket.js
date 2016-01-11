@@ -85,7 +85,7 @@ io.on('connection', function(socket){
         if(Session.socketAuthenticate(socket)){
             if( Session.socketDisconnect(socket) ){
                 socket.broadcast.emit('broadcast_leave',
-                    socket.request.session.user);
+                    new Ret(0, "User Leave", socket.request.session.user));
                 console.log("User " + socket.request.session.user.nickname + " Leaves!");
             }
         }
