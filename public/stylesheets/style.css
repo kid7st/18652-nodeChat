@@ -44,6 +44,9 @@ a {
     text-align: right;
     background-color: #dff0d8;
     width: auto;
+    float: right;
+    clear: both;
+    margin-top: 20px;
 }
 
  .text-muted {
@@ -59,6 +62,10 @@ a {
 
 .bg-other {
     background-color: #d9edf7;
+    width: auto;
+    float: left;
+    clear: both;
+    margin-top: 20px;
 }
 
 .bs-online {

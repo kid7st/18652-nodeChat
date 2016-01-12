@@ -6,7 +6,8 @@ $(document).ready(function(){
             content: content
         });
 
-        console.log(content);
+        $('#message').val('');
+
         event.preventDefault();
     });
 
@@ -62,6 +63,9 @@ socket.on('msg_list', function(ret){
                 $('#messages-list').append(item);
             }
         }
+
+        var element = document.getElementById("messages-list");
+        element.scrollTop = element.scrollHeight;
     }
 });
 
